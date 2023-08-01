@@ -1,0 +1,93 @@
+version: '3'
+
+services:
+    demo_manager_web_1_230728:
+        image: openjdk:11-jre
+        volumes:
+            - ${PWD}/app/:/app/:z
+        environment:
+            - LC_ALL=C.UTF-8
+            - TZ=Asia/Seoul
+            - SERVER_PORT=7070
+        restart: always
+#        network_mode: "host"
+        ports:
+            - "7072:7070"
+        networks:
+            - demo_manager_net_230728
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "1"
+        entrypoint:
+            - sh
+            - -c
+            - java -jar /app/demo_manager.war  --spring.config.additional-location=file:///app/application.properties
+
+    demo_manager_web_2_230728:
+        image: openjdk:11-jre
+        volumes:
+            - ${PWD}/app/:/app/:z
+        environment:
+            - LC_ALL=C.UTF-8
+            - TZ=Asia/Seoul
+            - SERVER_PORT=7071
+        restart: always
+        #        network_mode: "host"
+        ports:
+            - "7073:7071"
+        networks:
+            - demo_manager_net_230728
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "1"
+        entrypoint:
+            - sh
+            - -c
+            - java -jar /app/demo_manager.war  --spring.config.additional-location=file:///app/application.properties
+
+    demo_manager_db_230728:
+        image: postgres:12
+        environment:
+            - LC_ALL=C.UTF-8
+            - LC_COLLATE=C
+            - TZ=Asia/Seoul
+            - POSTGRES_DB=demo_manager
+            - POSTGRES_USER=demo_manager
+            - POSTGRES_PASSWORD=privacy!@34
+            - POSTGRES_HOST_AUTH_METHOD=md5
+        restart: always
+        networks:
+            - demo_manager_net_230728
+        volumes:
+            - ${PWD}/data/:/var/lib/postgresql/data/:z
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "1"
+        shm_size: 512mb
+
+    demo_manager_redis_230728:
+        image: redis:6.2
+        environment:
+            - LC_ALL=C.UTF-8
+            - LC_COLLATE=C
+            - TZ=Asia/Seoul
+            - vm.overcommits=1
+        restart: always
+        networks:
+            - demo_manager_net_230728
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "1"
+
+
+networks:
+    demo_manager_net_230728:
+        driver: bridge
