@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  ekyc_db:
+    container_name: ekyc_db
+    image: postgres:12
+    environment:
+      - LC_ALL=C.UTF-8
+      - LC_COLLATE=C
+      - TZ=Asia/Seoul
+      - POSTGRES_DB=ekyc
+      - POSTGRES_USER=ekyc
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_HOST_AUTH_METHOD=md5
+    restart: always
+    volumes:
+      - db_volumes:/var/lib/postgresql/data/:z
+    network_mode: "host"
+      #    ports:
+      #      - "5433:5432" 
+    logging:
+      driver: "json-file"
+      options:
+         max-size: "10m"
+         max-file: "1"
+    shm_size: 512mb
+
+volumes:
+    db_volumes:

@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+
+  middleware:
+    container_name: ekyc_middleware
+    image: openjdk:11-jre
+    volumes:
+      - ${PWD}/app/:/root/app/:z
+      - ${PWD}/idocr/:/root/idocr/:z
+    environment:
+      - LC_ALL=C.UTF-8
+      - TZ=Asia/Seoul
+      - SPRING_PROFILES_ACTIVE=ekyc
+      - LOGGING_CONFIG=/root/app/logback.xml
+      - USERID=1001
+      - USERGID=1001
+    restart: always
+    network_mode: "host"
+      #    ports:
+      #      - "8200:8200"
+    logging:
+      driver: "json-file"
+      options:
+         max-size: "10m"
+         max-file: "1"
+    entrypoint:
+      - sh
+      - -c
+      - java -jar /root/app/ROOT.war  --spring.config.additional-location=file:///root/app/middleware.yml
